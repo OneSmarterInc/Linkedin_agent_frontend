@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import api from '../api'
+import AgentHistory from '../components/AgentHistory'
 
 const Empty=()=> <span className="muted">No information found</span>
 function Section({title,children}){return <section className="card"><h2>{title}</h2>{children}</section>}
@@ -20,6 +21,6 @@ export default function ProfilePage(){
  <Section title="Posts">{p.posts.length?p.posts.map(x=><div className="item" key={x.id}><p>{x.text}</p>{x.date&&<small>{x.date}</small>}{x.topics?.length>0&&<div className="chips">{x.topics.map(t=><span className="chip" key={t}>{t}</span>)}</div>}</div>):<Empty/>}</Section>
  <Section title="Certifications">{p.certifications.length?p.certifications.map(x=><div className="item" key={x.id}><strong>{x.name||'Certification'}</strong><div>{x.issuer}</div><small>{x.issue_date}</small></div>):<Empty/>}</Section>
  <Section title="Source evidence">{evidence.length?<details><summary>{evidence.length} validated facts</summary><ul className="evidence-list">{evidence.map(e=><li key={e.id}><strong>{e.field_name}:</strong> {e.value}<br/><small>{e.source_image_name}: “{e.evidence_text}”</small></li>)}</ul></details>:<Empty/>}</Section>
- <Section title={`Source images (${images.length})`}>{images.map(image=><details key={image.id}><summary>{image.original_name} — {image.status}</summary>{image.error&&<p className="warning">{image.error}</p>}<p>Text read from this image. If information is missing here, upload a clearer image or crop the relevant section.</p><pre style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{image.raw_text||'No readable text was found.'}</pre></details>)}</Section>
+ <Section title={`Source images (${images.length})`}>{images.map(image=><details key={image.id}><summary>{image.original_name} — {image.status}</summary>{image.error&&<p className="warning">{image.error}</p>}<AgentHistory trace={image.agent_trace}/><p>Text read from this image, including any agent OCR retries. If information is missing here, upload a clearer image or crop the relevant section.</p><pre style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{image.raw_text||'No readable text was found.'}</pre></details>)}</Section>
  </div>
 }
