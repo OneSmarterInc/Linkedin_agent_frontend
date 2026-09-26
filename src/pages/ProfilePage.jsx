@@ -9,8 +9,8 @@ export default function ProfilePage(){
  useEffect(()=>{api.get(`/profiles/${id}/`).then(r=>setP(r.data));api.get(`/profiles/${id}/evidence/`).then(r=>setEvidence(r.data));api.get(`/profiles/${id}/images/`).then(r=>setImages(r.data))},[id])
  if(!p)return <div className="center">Loading…</div>
  if(p.status==='PROCESSING')return <div className="card"><p>Still processing.</p><Link to={`/profiles/${id}/processing`}>View progress</Link></div>
- const failedImages=images.filter(image=>image.status==='FAILED')
- return <div><div className="page-title"><div><h1>{p.name||'Unnamed profile'}</h1><p>{p.headline||'No headline found'}</p></div><Link className="button secondary" to={`/profiles/${id}/upload`}>Add images</Link></div>{failedImages.length>0&&<div className="warning"><strong>{failedImages.length} image{failedImages.length===1?'':'s'} could not be included.</strong><ul>{failedImages.map(image=><li key={image.id}>{image.original_name}: {image.error||'Extraction failed'}</li>)}</ul></div>}
+ const reviewImages=images.filter(image=>image.status==='FAILED'||image.error)
+ return <div><div className="page-title"><div><h1>{p.name||'Unnamed profile'}</h1><p>{p.headline||'No headline found'}</p></div><Link className="button secondary" to={`/profiles/${id}/upload`}>Add images or retry</Link></div>{p.status==='FAILED'&&<div className="error">{p.last_error||'Extraction could not finish. Previous results have been kept.'}</div>}{reviewImages.length>0&&<div className="warning"><strong>{reviewImages.length} image{reviewImages.length===1?'':'s'} need review. Supported results are shown below.</strong><ul>{reviewImages.map(image=><li key={image.id}>{image.original_name}: {image.error||'Extraction failed'}</li>)}</ul></div>}
  <Section title="About">{p.about?<p>{p.about}</p>:<Empty/>}</Section>
  <Section title="Location">{p.location?<p>{p.location}</p>:<Empty/>}</Section>
  <Section title={`Skills (${p.skills.length})`}>{p.skills.length?<div className="chips">{p.skills.map(s=><span className="chip" key={s.id}>{s.name}</span>)}</div>:<Empty/>}</Section>
@@ -20,5 +20,6 @@ export default function ProfilePage(){
  <Section title="Posts">{p.posts.length?p.posts.map(x=><div className="item" key={x.id}><p>{x.text}</p>{x.date&&<small>{x.date}</small>}{x.topics?.length>0&&<div className="chips">{x.topics.map(t=><span className="chip" key={t}>{t}</span>)}</div>}</div>):<Empty/>}</Section>
  <Section title="Certifications">{p.certifications.length?p.certifications.map(x=><div className="item" key={x.id}><strong>{x.name||'Certification'}</strong><div>{x.issuer}</div><small>{x.issue_date}</small></div>):<Empty/>}</Section>
  <Section title="Source evidence">{evidence.length?<details><summary>{evidence.length} validated facts</summary><ul className="evidence-list">{evidence.map(e=><li key={e.id}><strong>{e.field_name}:</strong> {e.value}<br/><small>{e.source_image_name}: “{e.evidence_text}”</small></li>)}</ul></details>:<Empty/>}</Section>
+ <Section title={`Source images (${images.length})`}>{images.map(image=><details key={image.id}><summary>{image.original_name} — {image.status}</summary>{image.error&&<p className="warning">{image.error}</p>}<p>Text read from this image. If information is missing here, upload a clearer image or crop the relevant section.</p><pre style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{image.raw_text||'No readable text was found.'}</pre></details>)}</Section>
  </div>
 }
