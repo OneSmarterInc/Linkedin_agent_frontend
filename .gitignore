@@ -1,0 +1,11 @@
+venv/
+.env
+db.sqlite3
+media/*
+media/.gitkeep
+node_modules/
+dist/
+.env
+__pycache__/
+*.pyc
+.DS_Store
