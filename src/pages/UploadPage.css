@@ -1,0 +1,5 @@
+.upload-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.upload-grid .card { min-width: 0; margin-bottom: 0; overflow-wrap: anywhere; }
+.upload-grid { margin-bottom: 18px; }
+.upload-grid select { display: block; padding: 8px; max-width: 100%; margin-top: 6px; border: 1px solid #ccd3df; border-radius: 8px; background: white; }
+@media (max-width: 700px) { .upload-grid { grid-template-columns: 1fr; } }
